@@ -23,6 +23,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfNumber;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfSmartCopy;
 
 public class Application {
 	private static String FILE_TEXTS = "c:/temp/textlines.txt";
@@ -43,17 +44,19 @@ public class Application {
 			// Configure All Productions
 			Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 			Float yOffset = 30f;
-			
+			Document document = new Document();
+			FileOutputStream outStream = new FileOutputStream(FILE_OUT +".pdf");
+			PdfSmartCopy copy = new PdfSmartCopy(document, outStream);
+	        document.open();
+	        
 			for(String text : readTextLines(FILE_TEXTS)) {
 				// Configure Next Production
-				Document document = new Document();
-		        PdfCopy copy = new PdfCopy(document, new FileOutputStream(FILE_OUT + "." +text+".pdf"));
 				PdfImportedPage pageFront, pageBack;
 		        PdfCopy.PageStamp stamp;
-
-		        // Begin Next Production
-		        document.open();
-				
+		        
+		        // because PdfCopy caches already imported pages, we need to reread the one we'd like to stamp.
+		        pdfReaderFront = new PdfReader(FILE_FRONT);
+		        
 		        // Add First Page
 		        pageFront = copy.getImportedPage(pdfReaderFront, 1);
 	            stamp = copy.createPageStamp(pageFront);
@@ -67,13 +70,13 @@ public class Application {
 		        // Add Second Page
 		        pageBack = copy.getImportedPage(pdfReaderBack, 1);
 		        PdfDictionary pageDict = pdfReaderBack.getPageN(1);
-	            pageDict.put(PdfName.ROTATE, new PdfNumber(180));
+	            pageDict.put(PdfName.ROTATE, new PdfNumber(180)); // rotate second page
 	            copy.addPage(pageBack);
-				
-	            addMetaData(document);
-				document.close();
 			}
-
+            addMetaData(document);
+			document.close();
+			
+			
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -85,7 +88,7 @@ public class Application {
 	private static void addMetaData(Document document) {
 		document.addTitle("noprobLAN Badges");
 		document.addSubject("automatic generated");
-		document.addKeywords("npl, noproblan, badges, lan party");
+		document.addKeywords("npl, noproblan, badge, lan party");
 		document.addAuthor("Josua Schmid");
 		document.addCreator("Josua Schmid");
 	}
