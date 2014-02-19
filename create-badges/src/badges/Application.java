@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,12 +32,75 @@ public class Application {
 	private static String FILE_FRONT = "c:/temp/FirstPdf.pdf";
 	private static String FILE_BACK = "c:/temp/FirstPdf.pdf";
 	private static String FILE_OUT = "c:/temp/FirstPdf-out.pdf";
-
+	private static Float STAMP_OFFSET_Y = 30f;
+	
+	/**
+	 * 
+	 * @param args textfile, front pdf template, back pdf template, output pdf, [stamp y offset]
+	 * @return 0 on success, -1 on failure
+	 */
 	public static void main(String[] args) {
+		// read regular command line arguments
+		String currentFile = "none";
+		try {
+			FILE_TEXTS = args[0];
+			FILE_FRONT = args[1];
+			FILE_BACK = args[2];
+			FILE_OUT = args[3];
+			
+			// check arguments (TODO extract repetitive code)
+			currentFile = FILE_TEXTS;
+			String fileType = Files.probeContentType(Paths.get(currentFile));
+			if (!fileType.equals("text/plain")) {
+				System.out.println(currentFile + " must be a text file but is " + fileType);
+			}
+			
+			currentFile = FILE_FRONT;
+			fileType = Files.probeContentType(Paths.get(currentFile));
+			if (!fileType.equals("application/pdf")) {
+				System.out.println(currentFile + " must be a pdf file but is " + fileType);
+			}
+			
+			currentFile = FILE_BACK;
+			fileType = Files.probeContentType(Paths.get(currentFile));
+			if (!fileType.equals("application/pdf")) {
+				System.out.println(currentFile + " must be a pdf file but is " + fileType);
+			}
+		} catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Please provide "
+					+"input text, "
+					+"front template, "
+					+"back template "
+					+"and output file as command line arguments. \n"
+					+"Eg: java -jar create-badges.jar ./lines.txt ./front.pdf ./back-pdf ./out.pdf \n"
+					+"A 5th argument offset y as a number is optional.");
+			return;
+		} catch (IOException e) {
+			System.out.println("File could not be accessed: " + currentFile);
+			return;
+		}
+		
+		// read optional command line arguments
+		try {
+			STAMP_OFFSET_Y = Float.parseFloat(args[4]);
+		} catch(NumberFormatException e) {
+			System.out.println("Offset must be a number.");
+			return;
+		} catch(ArrayIndexOutOfBoundsException e) {
+			// that's ok for an optional argument
+		}
+		
+		// do the work!
+		createBadges(FILE_TEXTS, FILE_FRONT, FILE_BACK, FILE_OUT, STAMP_OFFSET_Y);
+		System.out.println("success.");
+	}
+
+	private static void createBadges(String inputTextfile, String frontTemplatePdf, 
+			String backTemplatePdf, String outputPdf, Float stampOffsetY) {
 		try {
 			// Read Templates
-			PdfReader pdfReaderFront = new PdfReader(FILE_FRONT);
-			PdfReader pdfReaderBack = new PdfReader(FILE_BACK);
+			PdfReader pdfReaderFront = new PdfReader(frontTemplatePdf);
+			PdfReader pdfReaderBack = new PdfReader(backTemplatePdf);
 			
 			// Validate Template Dimensions
 			Rectangle dimFront = pdfReaderFront.getPageSize(1);
@@ -43,19 +108,18 @@ public class Application {
 			
 			// Configure All Productions
 			Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
-			Float yOffset = 30f;
 			Document document = new Document();
-			FileOutputStream outStream = new FileOutputStream(FILE_OUT +".pdf");
+			FileOutputStream outStream = new FileOutputStream(outputPdf);
 			PdfSmartCopy copy = new PdfSmartCopy(document, outStream);
 	        document.open();
 	        
-			for(String text : readTextLines(FILE_TEXTS)) {
+			for(String text : readTextLines(inputTextfile)) {
 				// Configure Next Production
 				PdfImportedPage pageFront, pageBack;
 		        PdfCopy.PageStamp stamp;
 		        
 		        // because PdfCopy caches already imported pages, we need to reread the one we'd like to stamp.
-		        pdfReaderFront = new PdfReader(FILE_FRONT);
+		        pdfReaderFront = new PdfReader(frontTemplatePdf);
 		        
 		        // Add First Page
 		        pageFront = copy.getImportedPage(pdfReaderFront, 1);
@@ -63,7 +127,7 @@ public class Application {
 	            ColumnText.showTextAligned(
 	                    stamp.getOverContent(), Element.ALIGN_CENTER,
 	                    new Phrase(text, catFont),
-	                    dimFront.getWidth()/2, dimFront.getHeight()-yOffset, 0);
+	                    dimFront.getWidth()/2, dimFront.getHeight()-STAMP_OFFSET_Y, 0);
 	            stamp.alterContents();
 	            copy.addPage(pageFront);
 				
@@ -82,9 +146,8 @@ public class Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-
+	
 	private static void addMetaData(Document document) {
 		document.addTitle("noprobLAN Badges");
 		document.addSubject("automatic generated");
@@ -104,7 +167,7 @@ public class Application {
 				result.add(strLine);
 			}
 			in.close();
-		} catch (Exception e){//Catch exception if any
+		} catch (Exception e){ //Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
 		return Collections.unmodifiableList(result);
