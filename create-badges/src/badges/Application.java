@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -107,7 +108,8 @@ public class Application {
 			Rectangle dimBack = pdfReaderBack.getPageSize(1);
 			
 			// Configure All Productions
-			Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+			Font catFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+			catFont.setColor(BaseColor.WHITE);
 			Document document = new Document();
 			FileOutputStream outStream = new FileOutputStream(outputPdf);
 			PdfSmartCopy copy = new PdfSmartCopy(document, outStream);
@@ -118,29 +120,29 @@ public class Application {
 				PdfImportedPage pageFront, pageBack;
 		        PdfCopy.PageStamp stamp;
 		        
-		        // because PdfCopy caches already imported pages, we need to reread the one we'd like to stamp.
-		        pdfReaderFront = new PdfReader(frontTemplatePdf);
-		        
 		        // Add First Page
 		        pageFront = copy.getImportedPage(pdfReaderFront, 1);
-	            stamp = copy.createPageStamp(pageFront);
+	            copy.addPage(pageFront);
+				
+		        // because PdfCopy caches already imported pages, we need to reread the one we'd like to stamp.
+		        pdfReaderBack = new PdfReader(backTemplatePdf);
+	            
+		        // Add Second Page with nickname
+		        pageBack = copy.getImportedPage(pdfReaderBack, 1);
+		        stamp = copy.createPageStamp(pageBack);
 	            ColumnText.showTextAligned(
 	                    stamp.getOverContent(), Element.ALIGN_CENTER,
 	                    new Phrase(text, catFont),
 	                    dimFront.getWidth()/2, dimFront.getHeight()-STAMP_OFFSET_Y, 0);
 	            stamp.alterContents();
-	            copy.addPage(pageFront);
-				
-		        // Add Second Page
-		        pageBack = copy.getImportedPage(pdfReaderBack, 1);
+	            // rotate it
 		        PdfDictionary pageDict = pdfReaderBack.getPageN(1);
 	            pageDict.put(PdfName.ROTATE, new PdfNumber(180)); // rotate second page
 	            copy.addPage(pageBack);
 			}
             addMetaData(document);
 			document.close();
-			
-			
+
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
