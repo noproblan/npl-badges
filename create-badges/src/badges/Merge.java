@@ -88,13 +88,14 @@ public class Merge {
      */
     public static void main(String[] args) {
     	try {
-			Merge.manipulatePdf("c:/temp/gamer-out.pdf", "c:/temp/gamer.pdf", 2);
-			Merge.manipulatePdf("c:/temp/vip-out.pdf", "c:/temp/vip.pdf", 2);
-			Merge.manipulatePdf("c:/temp/team-out.pdf", "c:/temp/team.pdf", 2);
-			Merge.manipulatePdf("c:/temp/guest-out.pdf", "c:/temp/guest.pdf", 2);
+			Merge.manipulatePdf("c:/temp/gamer.pdf", "c:/temp/gamer-out.pdf", 2);
+			//Merge.manipulatePdf("c:/temp/vip.pdf", "c:/temp/vip-out.pdf", 2);
+			Merge.manipulatePdf("c:/temp/team.pdf", "c:/temp/team-out.pdf", 2);
+			Merge.manipulatePdf("c:/temp/guest.pdf", "c:/temp/guest-out.pdf", 2);
 		} catch (IOException | DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    	System.out.println("success!");
     }
 }
