@@ -20,7 +20,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class Merge {
+public class MergeBadges {
 
     /** Format of the resulting PDF files. */
     public static final String RESULT = "c:/result%dup.pdf";
@@ -88,10 +88,10 @@ public class Merge {
      */
     public static void main(String[] args) {
     	try {
-			Merge.manipulatePdf("c:/temp/gamer.pdf", "c:/temp/gamer-out.pdf", 2);
+			MergeBadges.manipulatePdf("c:/temp/gamer.pdf", "c:/temp/gamer-out.pdf", 2);
 			//Merge.manipulatePdf("c:/temp/vip.pdf", "c:/temp/vip-out.pdf", 2);
-			Merge.manipulatePdf("c:/temp/team.pdf", "c:/temp/team-out.pdf", 2);
-			Merge.manipulatePdf("c:/temp/guest.pdf", "c:/temp/guest-out.pdf", 2);
+			MergeBadges.manipulatePdf("c:/temp/team.pdf", "c:/temp/team-out.pdf", 2);
+			MergeBadges.manipulatePdf("c:/temp/guest.pdf", "c:/temp/guest-out.pdf", 2);
 		} catch (IOException | DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -28,7 +28,7 @@ import com.itextpdf.text.pdf.PdfNumber;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSmartCopy;
 
-public class Application {
+public class GenerateBadges {
 	private static String FILE_TEXTS = "c:/temp/textlines.txt";
 	private static String FILE_FRONT = "c:/temp/FirstPdf.pdf";
 	private static String FILE_BACK = "c:/temp/FirstPdf.pdf";
@@ -52,21 +52,26 @@ public class Application {
 			// check arguments (TODO extract repetitive code)
 			currentFile = FILE_TEXTS;
 			String fileType = Files.probeContentType(Paths.get(currentFile));
+			
+			/* Buggy on MAC OS X: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7133484 */
 			if (!fileType.equals("text/plain")) {
 				System.out.println(currentFile + " must be a text file but is " + fileType);
 			}
 			
 			currentFile = FILE_FRONT;
+			/* Buggy on MAC OS X: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7133484 */
 			fileType = Files.probeContentType(Paths.get(currentFile));
 			if (!fileType.equals("application/pdf")) {
 				System.out.println(currentFile + " must be a pdf file but is " + fileType);
 			}
 			
 			currentFile = FILE_BACK;
+			/* Buggy on MAC OS X: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7133484 */
 			fileType = Files.probeContentType(Paths.get(currentFile));
 			if (!fileType.equals("application/pdf")) {
 				System.out.println(currentFile + " must be a pdf file but is " + fileType);
 			}
+			
 		} catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("Please provide "
 					+"input text, "
