@@ -1,6 +1,6 @@
 # noprobLAN Badge Creator
 
-At noprobLAN we creates badges from pdf templates with a this Java application. The application consists of two console applications and a GUI which combines them. It's possible to create badges and save them to a PDF all merged onto A4 pages. 
+At noprobLAN we creates badges from PDF templates with this Java application. The application consists of two console applications and a GUI which combines them. It's possible to create badges and save them to a PDF all merged onto A4 pages. 
 
 <img src="https://raw.githubusercontent.com/noproblan/npl-badges/master/sample-badges.png" height="200px"/>
 
