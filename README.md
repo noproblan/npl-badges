@@ -1,6 +1,11 @@
 # noprobLAN Badge Creator
 
-Creates badges from pdf templates. For now it has to be used by console. There are two applications: One creates badges and saves them to a PDF. The other merges badges to A4 pages.
+Creates badges from pdf templates. The application consists of two console applications and a GUI which combindes the two. It's possible to create badges and save them to a PDF all merged to A4 pages. 
+
+<img src="https://raw.githubusercontent.com/noproblan/npl-badges/master/sample-badges.png" height="200px"/>
+
+## Configuration
+Custom configuration like editing the output format, scaling, offsets, etc. has to be done in code for now.
 
 ## Known Issues
 
